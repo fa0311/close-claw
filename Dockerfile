@@ -1,9 +1,9 @@
-FROM node:22-bookworm-slim
+FROM node:24-bookworm-slim
 
 WORKDIR /app
 
 RUN apt-get update \
-  && apt-get install -y --no-install-recommends bash ca-certificates curl git \
+  && apt-get install -y --no-install-recommends bash ca-certificates curl git python3 python3-pip jq \
   && rm -rf /var/lib/apt/lists/*
 
 RUN corepack enable \
