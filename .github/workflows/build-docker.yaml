@@ -3,7 +3,7 @@ name: Docker Build and Deploy
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   build-docker-image:
@@ -30,4 +30,3 @@ jobs:
       - name: Push Docker Image
         run: docker push ${{ env.DOCKER_BASE_NAME }}:${{ env.TAG_NAME }}
 
-        
