@@ -15,7 +15,7 @@ RUN curl -fsSL https://claude.ai/install.sh | bash -s stable
 
 ENV PATH="/home/node/.local/bin:${PATH}"
 
-RUN npx --yes skills add fa0311/twitter_api_safe_relay_skills
+RUN npx --yes skills add --global fa0311/twitter_api_safe_relay_skills
 
 COPY --chown=node:node package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN CI=true pnpm install --frozen-lockfile
