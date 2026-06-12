@@ -1,9 +1,9 @@
 import "dotenv/config";
 
+import { readFile } from "node:fs/promises";
 import { type EffortLevel, type Options, query } from "@anthropic-ai/claude-agent-sdk";
 import Anthropic from "@anthropic-ai/sdk";
 import { Client, type Interaction, SlashCommandBuilder } from "discord.js";
-import { readFile } from "node:fs/promises";
 import { config } from "./config.js";
 import { logger } from "./lib/logger.js";
 import { createProgressLogger } from "./lib/progressLogger.js";
