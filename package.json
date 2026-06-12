@@ -2,6 +2,7 @@
   "name": "close-claw",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "description": "A tiny Discord app that runs Claude CLI.",
   "packageManager": "pnpm@11.5.2",
   "main": "src/index.ts",

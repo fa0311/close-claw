@@ -1,9 +1,9 @@
 import "dotenv/config";
 
-import { readFileSync } from "node:fs";
 import { type EffortLevel, type Options, query } from "@anthropic-ai/claude-agent-sdk";
 import Anthropic from "@anthropic-ai/sdk";
 import { Client, type Interaction, SlashCommandBuilder } from "discord.js";
+import { readFile } from "node:fs/promises";
 import { config } from "./config.js";
 import { logger } from "./lib/logger.js";
 import { createProgressLogger } from "./lib/progressLogger.js";
@@ -28,11 +28,9 @@ const client = new Client({ intents: ["Guilds"] });
 let lastSessionId: string | undefined;
 
 const mcpServers = await (async () => {
-  const rawConfig = readFileSync(config.MCP_SERVERS_CONFIG_PATH, "utf8");
+  const rawConfig = await readFile(config.MCP_SERVERS_CONFIG_PATH, "utf8");
   return JSON.parse(rawConfig) as Options["mcpServers"];
-})().catch(() => {
-  return undefined;
-});
+})();
 
 client.on("interactionCreate", async (interaction: Interaction) => {
   await handleInteraction(interaction).catch(async (error: unknown) => {
