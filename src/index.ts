@@ -93,7 +93,9 @@ const handleInteraction = async (interaction: Interaction) => {
         if (message.type === "assistant") {
           for (const block of message.message.content) {
             if (block.type === "tool_use") {
-              logger.add(`- ${block.name}`);
+              const data = JSON.stringify(block.input);
+              const truncatedData = data.length > 100 ? `${data.slice(0, 100)}...` : data;
+              logger.add(`- ${block.name} \`${truncatedData}\``);
             }
           }
         } else if (message.type === "result") {
