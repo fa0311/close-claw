@@ -1,0 +1,53 @@
+services:
+  app:
+    build: .
+    environment:
+      DISCORD_TOKEN: "here-is-the-discord-token"
+      ANTHROPIC_API_KEY: "here-is-the-anthropic-api-key"
+      ADMIN_USER_ID: "here-is-the-admin-user-id"
+      TWITTER_RELAY_BASE_URL: "http://kasmweb:3000"
+    volumes:
+      - ./settings.json:/app/settings.json:ro
+    depends_on:
+      - playwright
+      - kasmweb
+
+  playwright:
+    image: mcp/playwright:latest
+    command: ["--host", "0.0.0.0", "--port", "8931"]
+    init: true
+    shm_size: "1gb"
+
+
+  init-profile:
+    image: ghcr.io/fa0311/twitter_api_safe_relay:latest-init-profile
+    container_name: init-profile
+    restart: "no"
+    volumes:
+      - dashboard_user_data:/profile
+
+  kasmweb:
+    image: kasmweb/chrome:1.18.0
+    container_name: kasmweb
+    restart: unless-stopped
+    depends_on:
+      - init-profile
+    ports:
+      - "6901:6901"
+      - "6900:3000"
+    environment:
+      VNC_PW: "password" # kasm_user
+      APP_ARGS: "--start-maximized --user-data-dir=/home/kasm-user/chrome-profile --password-store=basic --remote-debugging-port=9222"
+    volumes:
+      - dashboard_user_data:/home/kasm-user/chrome-profile
+    shm_size: "4gb"
+
+  dashboard:
+    image: ghcr.io/fa0311/twitter_api_safe_relay:latest-dashboard
+    container_name: twitter_api_safe_relay
+    restart: unless-stopped
+    depends_on:
+      - kasmweb
+    volumes:
+      - ./settings.json:/app/settings.json:ro
+    network_mode: "service:kasmweb"

@@ -1,0 +1,7 @@
+{
+  "playwright": {
+    "type": "http",
+    "url": "http://playwright:8931/mcp",
+    "alwaysLoad": true
+  }
+}
