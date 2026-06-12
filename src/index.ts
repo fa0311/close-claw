@@ -11,16 +11,20 @@ import { splitMessage } from "./lib/utils.js";
 
 const anthropic = new Anthropic({ apiKey: config.ANTHROPIC_API_KEY });
 
+const effortChoices = [
+  { name: "Low", value: "low" },
+  { name: "Medium", value: "medium" },
+  { name: "High", value: "high" },
+  { name: "Extra High", value: "xhigh" },
+  { name: "Max", value: "max" },
+] satisfies { name: string; value: EffortLevel }[];
+
 const loadClaudeChoices = async () => {
   const models = await anthropic.models.list();
 
-  const modelChoices = models.data
-    .filter((model) => model.capabilities?.effort?.supported)
-    .map((model) => ({ name: model.display_name, value: model.id }));
+  const modelChoices = models.data.map((model) => ({ name: model.display_name, value: model.id }));
 
-  const effortChoices = models.data.map((model) => ({ name: model.display_name, value: model.id }));
-
-  return { modelChoices, effortChoices };
+  return modelChoices;
 };
 
 const client = new Client({ intents: ["Guilds"] });
@@ -112,7 +116,7 @@ const handleInteraction = async (interaction: Interaction) => {
 };
 
 client.once("ready", async (readyClient) => {
-  const { modelChoices, effortChoices } = await loadClaudeChoices();
+  const modelChoices = await loadClaudeChoices();
 
   const claudeCommand = new SlashCommandBuilder()
     .setName("claude")
