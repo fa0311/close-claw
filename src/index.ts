@@ -66,7 +66,7 @@ const handleInteraction = async (interaction: Interaction) => {
 
   await interaction.deferReply();
 
-  const rawPrompt = interaction.options.getString("prompt", true);
+  const prompt = interaction.options.getString("prompt", true);
   const startNew = interaction.options.getBoolean("new") ?? false;
   const effort = interaction.options.getString("effort") as EffortLevel | null;
   const model = interaction.options.getString("model") ?? undefined;
@@ -83,14 +83,6 @@ const handleInteraction = async (interaction: Interaction) => {
     resume: startNew ? undefined : lastSessionId,
     mcpServers: mcpServers,
   };
-
-  const prompt = (() => {
-    const reply = interaction.options.getMessage("reply");
-    if (reply) {
-      return `Replying to the following message:\n${reply.content}\n\n${rawPrompt}`;
-    }
-    return rawPrompt;
-  })();
 
   await createProgressLogger<string>(
     async (messages) => {
