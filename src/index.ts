@@ -66,7 +66,7 @@ const handleInteraction = async (interaction: Interaction) => {
 
   await interaction.deferReply();
 
-  const prompt = interaction.options.getString("prompt", true);
+  const rawPrompt = interaction.options.getString("prompt", true);
   const startNew = interaction.options.getBoolean("new") ?? false;
   const effort = interaction.options.getString("effort") as EffortLevel | null;
   const model = interaction.options.getString("model") ?? undefined;
@@ -84,6 +84,14 @@ const handleInteraction = async (interaction: Interaction) => {
     mcpServers: mcpServers,
   };
 
+  const prompt = (() => {
+    const reply = interaction.options.getMessage("reply");
+    if (reply) {
+      return `Replying to the following message:\n${reply.content}\n\n${rawPrompt}`;
+    }
+    return rawPrompt;
+  })();
+
   await createProgressLogger<string>(
     async (messages) => {
       await interaction.editReply(messages.join("\n"));
@@ -94,8 +102,8 @@ const handleInteraction = async (interaction: Interaction) => {
           for (const block of message.message.content) {
             if (block.type === "tool_use") {
               const data = JSON.stringify(block.input);
-              const truncatedData = data.length > 400 ? `${data.slice(0, 400)}...` : data;
-              logger.add(`- ${block.name} \`${truncatedData}\``);
+              const truncatedData = data.length > 200 ? `${data.slice(0, 200)}...` : data;
+              logger.add(`- ${block.name}\n\`${truncatedData}\``);
             }
           }
         } else if (message.type === "result") {
